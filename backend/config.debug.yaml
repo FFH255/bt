@@ -1,0 +1,55 @@
+server:
+    address: :5001
+    shutdown_timeout: "15s"
+    read_timeout: "60s"
+    write_timeout: "60s"
+    idle_timeout: "60s"
+logger:
+    enabled: true
+    use_file: false
+    path: ""
+cors:
+    allow_all_origins: true
+    allow_credentials: true
+postgres:
+    connection: "postgres://user:user@localhost:5432/user?sslmode=disable"
+    migrations: "file://src/migrations"
+redis:
+    address: "localhost:6379"
+    password: "user"
+swagger:
+    login: "admin"
+    password: "admin"
+    endpoint: "http://localhost:5001"
+cookie:
+    secure: false
+    key: "blindtyping"
+scheduler:
+    delete_expired_sessions_interval: "@every 24h"
+auth:
+    jwt_secret: "blindtyping"
+    providers:
+        google:
+            client_key: ${GOOGLE_PROVIDER_CLIENT_KEY}
+            secret: ${GOOGLE_PROVIDER_SECRET}
+            callback_url: "http://localhost:5001/auth/google/callback"
+        github:
+            client_key: ${GITHUB_PROVIDER_CLIENT_KEY}
+            secret: ${GITHUB_PROVIDER_SECRET}
+            callback_url: "http://localhost:5001/auth/github/callback"
+    logged_in_redirect_url: "http://localhost:5001/swagger/index.html"
+    registration_redirect_url: "http://localhost:5001/swagger/index.html"
+    error_redirect_url: "http://localhost:5001/swagger/index.html"
+profile:
+    expiration: "10m"
+    use_redis: true
+statistics:
+    pb_expiration_time: "15m"
+antifroad:
+    is_disabled: false
+    password: ${ANTIFROAD_PASSWORD}
+    max_keys: 5
+    rotation_interval: "@every 24h"
+languages:
+    - "english"
+    - "russian"

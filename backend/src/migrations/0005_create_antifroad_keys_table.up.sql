@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS antifroad_keys (
+    key VARCHAR(1024) NOT NULL PRIMARY KEY,
+    created_at TIMESTAMPTZ NOT NULL
+);

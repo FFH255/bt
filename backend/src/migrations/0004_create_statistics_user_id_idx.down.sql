@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS idx_statistics_user_id;

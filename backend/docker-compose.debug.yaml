@@ -1,0 +1,49 @@
+name: blindtyping-backend-debug
+
+services:
+  postgres:
+    restart: always
+    image: postgres:latest
+    container_name: postgres-debug
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=user
+      - POSTGRES_DB=user
+    ports:
+      - '5432:5432'
+    volumes:
+      - bt-pg-data:/var/lib/postgresql/data
+    networks:
+      - net
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 5s
+      timeout: 3s
+      retries: 2
+
+  redis:
+    restart: always
+    image: redis:7-alpine
+    container_name: redis-debug
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_PASSWORD=user
+    volumes:
+      - bt-redis-data:/data
+    networks:
+      - net
+    command: redis-server --appendonly no --requirepass user
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+networks:
+  net:
+    driver: bridge
+
+volumes:
+  bt-pg-data:
+  bt-redis-data:

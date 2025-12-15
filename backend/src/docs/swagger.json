@@ -1,0 +1,1016 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Blindtyping",
+        "contact": {},
+        "version": "0.1"
+    },
+    "basePath": "/",
+    "paths": {
+        "/antifroad/key": {
+            "get": {
+                "description": "Получить актуальный антофрод-ключ. Ручка используется только внутри контура blindtyping.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Antifroad"
+                ],
+                "summary": "Получить актуальный антофрод-ключ",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "12345",
+                        "description": "Пароль для авторизации в модуле антифрода",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Антифрод-ключ",
+                        "schema": {
+                            "$ref": "#/definitions/AntifroadKeyGetHandler.ResponseBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Отсутствуем пароль",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Неправильный пароль",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Ключ не найден (вообще такого быть не должно)",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/antifroad/rotate-keys": {
+            "post": {
+                "description": "Ротировать ключи. Ручка используется только внутри контура blindtyping.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Antifroad"
+                ],
+                "summary": "Ротировать ключи (служебная ручка)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "12345",
+                        "description": "Пароль для авторизации в модуле антифрода",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Отсутствуем пароль",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Неправильный пароль",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete session (refresh token), add access token to block list for some time and delete tokens from cookies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "User session not found",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server side error",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/ping": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Check if user logged in",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Ping",
+                "responses": {
+                    "200": {
+                        "description": "Pong",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Rotates access and refresh tokens",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "User session not found",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Something went wrong server side",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Finalize user registration by submitting a nickname and a registration token (via cookie).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register user",
+                "parameters": [
+                    {
+                        "description": "User nickname",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AuthRegisterPostHandler.RequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Access and refresh tokens are set as cookies"
+                    },
+                    "400": {
+                        "description": "Invalid input or missing registration token",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "User already exists",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error during registration",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/username-availability": {
+            "get": {
+                "description": "Если username свободен и соответствует требованиям, то в теле ответа будет available: true, иначе available: false. В cookie должен быть живой токен регистрации (registration_token), иначе 401",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Преверяет username на доступность для регистрации",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "ffh",
+                        "description": "Username, который нужно проверить на доступность",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AuthUsernameAvailabilityGetHandler.ResponseBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Токен регистрации (registration_token) отсутствует или истек",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/{provider}": {
+            "get": {
+                "description": "Initiates the OAuth authentication process by redirecting the user to the provider's login page.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "OAuth Login Redirect",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "OAuth provider name",
+                        "name": "provider",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User already authenticated"
+                    },
+                    "400": {
+                        "description": "Missing provider or invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/{provider}/callback": {
+            "get": {
+                "description": "Обрабатывает callback-запрос от OAuth провайдера. Завершает процесс аутентификации и выполняет перенаправление на соответствующий фронтенд URL в зависимости от результата.\n\n**Сценарии перенаправления:**\n- Успешная аутентификация существующего пользователя → `logged_in_url`\n- Первая аутентификация нового пользователя → `registration_url`\n- Ошибка аутентификации → `error_redirection_url?status=STATUS`\n\n**Коды ошибок:**\n- `1` - Email уже занят другие аккаунтом\n\n**Особенности:**\n- Устанавливает authentication cookies при успешной аутентификации или registration_token при необходимости регистрации\n- Всегда возвращает HTTP 308 (Permanent Redirect)\n- Параметр `status` передается только в случае ошибки",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "OAuth Callback Handler",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Название OAuth провайдера (google или github)",
+                        "name": "provider",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "308": {
+                        "description": "Перенаправление на фронтенд"
+                    }
+                }
+            }
+        },
+        "/users/me": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получить информацию о текущем пользователе при помощи ID вшитого в access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Получить информацию о текущем пользователе",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UsersMeGetHandler.ResponseBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь с таким ID не найден",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Непредвиденная ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me/statistics": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Отдает статистику текущего пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Statistics"
+                ],
+                "summary": "Получить статистику текущего пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "2015-09-15T14:00:12-00:00",
+                        "description": "Дата начала периода выборки в RFC3339",
+                        "name": "dateFrom",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Статистика пользователя",
+                        "schema": {
+                            "$ref": "#/definitions/UsersMeStatisticsGetHandler.ResponseBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Неправильно сформирован запрос",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован в системе",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Серверная ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a new statistics record for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Statistics"
+                ],
+                "summary": "Save typing statistics",
+                "parameters": [
+                    {
+                        "description": "Statistics data to save",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UsersMeStatisticsPostHandler.RequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Statistics successfully created",
+                        "schema": {
+                            "$ref": "#/definitions/UsersMyStatisticsPostHandler.ResponseBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Делает soft delete для всей статистики пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Statistics"
+                ],
+                "summary": "Отчистить всю статистику пользователя",
+                "responses": {
+                    "200": {
+                        "description": "Статистика пользователя удалена"
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера (смотреть логи)",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me/username": {
+            "patch": {
+                "description": "Изменить имя пользователя, но не чаще чем 1 раз в 15 дней",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Изменить имя пользователя",
+                "parameters": [
+                    {
+                        "description": "Содержит новое имя пользователя",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UserUsernamePatchHandler.RequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Имя пользователя обновлено"
+                    },
+                    "400": {
+                        "description": "Имя пользователя отсутствует или не подходит под условия",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "Имя пользователя занято",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "429": {
+                        "description": "Нельзя так часто изменять имя пользователя",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера (смотреть логи)",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{username}/profile": {
+            "get": {
+                "description": "Gets profile of any user by username",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Gets user's profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username of user for profile fetching",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User's profile",
+                        "schema": {
+                            "$ref": "#/definitions/UsersUsernameProfileGetHandler.ResponseBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "AntifroadKeyGetHandler.ResponseBody": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "example": "12345"
+                }
+            }
+        },
+        "AuthRegisterPostHandler.RequestBody": {
+            "type": "object",
+            "properties": {
+                "nickname": {
+                    "type": "string",
+                    "example": "ffh255"
+                }
+            }
+        },
+        "AuthUsernameAvailabilityGetHandler.ResponseBody": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ResponseError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "something went wrong"
+                }
+            }
+        },
+        "UserUsernamePatchHandler.RequestBody": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "UsersMeGetHandler.ResponseBody": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "$ref": "#/definitions/UsersMeGetHandler.User"
+                }
+            }
+        },
+        "UsersMeGetHandler.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "joinedAt": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "UsersMeStatisticsGetHandler.ResponseBody": {
+            "type": "object",
+            "properties": {
+                "statistics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UsersMeStatisticsGetHandler.Stats"
+                    }
+                }
+            }
+        },
+        "UsersMeStatisticsGetHandler.Stats": {
+            "type": "object",
+            "properties": {
+                "accuracy": {
+                    "type": "number",
+                    "format": "float64",
+                    "example": 98.7
+                },
+                "cpm": {
+                    "type": "number",
+                    "format": "float64",
+                    "example": 210.3
+                },
+                "duration": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 120000
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "uint",
+                    "example": 1
+                },
+                "isPunctuation": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "language": {
+                    "type": "string",
+                    "example": "english"
+                },
+                "mode": {
+                    "type": "string",
+                    "example": "time"
+                },
+                "playedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2023-12-25T15:04:05Z"
+                },
+                "submode": {
+                    "type": "string",
+                    "example": "30s"
+                },
+                "uncompletedTestsCount": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "uncompletedTestsTotalDuration": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "wpm": {
+                    "type": "number",
+                    "format": "float64",
+                    "example": 42.5
+                }
+            }
+        },
+        "UsersMeStatisticsPostHandler.RequestBody": {
+            "type": "object",
+            "properties": {
+                "accuracy": {
+                    "type": "number",
+                    "example": 98.7
+                },
+                "cpm": {
+                    "type": "number",
+                    "example": 210.3
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2025-10-19T19:02:29+03:00"
+                },
+                "durationMs": {
+                    "type": "integer",
+                    "example": 60000
+                },
+                "finishedAt": {
+                    "type": "string",
+                    "example": "2025-10-19T19:02:29+03:00"
+                },
+                "isPunctuation": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "language": {
+                    "type": "string",
+                    "example": "english"
+                },
+                "mode": {
+                    "type": "string",
+                    "example": "time"
+                },
+                "sign": {
+                    "type": "string",
+                    "example": "12345"
+                },
+                "startedAt": {
+                    "type": "string",
+                    "example": "2025-10-19T19:02:29+03:00"
+                },
+                "submode": {
+                    "type": "string",
+                    "example": "1m"
+                },
+                "uid": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "uncompletedTestsCount": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "uncompletedTestsDurationMs": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "wpm": {
+                    "type": "number",
+                    "example": 42.5
+                }
+            }
+        },
+        "UsersMyStatisticsPostHandler.ResponseBody": {
+            "type": "object",
+            "properties": {
+                "isPersonalBest": {
+                    "type": "boolean"
+                },
+                "wpmShift": {
+                    "type": "number"
+                }
+            }
+        },
+        "UsersUsernameProfileGetHandler.LanguageStats": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "type": "string",
+                    "example": "english"
+                },
+                "testsCompleted": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "testsStarted": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "timePlayed": {
+                    "type": "integer",
+                    "example": 1000
+                }
+            }
+        },
+        "UsersUsernameProfileGetHandler.PersonalBest": {
+            "type": "object",
+            "properties": {
+                "accuracy": {
+                    "type": "number",
+                    "example": 300
+                },
+                "language": {
+                    "type": "string",
+                    "example": "english"
+                },
+                "mode": {
+                    "type": "string",
+                    "example": "words"
+                },
+                "played_at": {
+                    "type": "string",
+                    "example": "2020-09-09T10:10:10Z"
+                },
+                "submode": {
+                    "type": "string",
+                    "example": "25"
+                },
+                "wpm": {
+                    "type": "number",
+                    "example": 100
+                }
+            }
+        },
+        "UsersUsernameProfileGetHandler.Profile": {
+            "type": "object",
+            "properties": {
+                "completedTests": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "joinedAt": {
+                    "type": "string",
+                    "example": "2020-01-01T00:00:00Z"
+                },
+                "languageStats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UsersUsernameProfileGetHandler.LanguageStats"
+                    }
+                },
+                "personalBests": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UsersUsernameProfileGetHandler.PersonalBest"
+                    }
+                },
+                "startedTests": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "timePlayed": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "username": {
+                    "type": "string",
+                    "example": "ffh"
+                }
+            }
+        },
+        "UsersUsernameProfileGetHandler.ResponseBody": {
+            "type": "object",
+            "properties": {
+                "profile": {
+                    "$ref": "#/definitions/UsersUsernameProfileGetHandler.Profile"
+                }
+            }
+        }
+    }
+}

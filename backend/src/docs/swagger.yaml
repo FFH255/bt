@@ -1,0 +1,696 @@
+basePath: /
+definitions:
+  AntifroadKeyGetHandler.ResponseBody:
+    properties:
+      key:
+        example: "12345"
+        type: string
+    type: object
+  AuthRegisterPostHandler.RequestBody:
+    properties:
+      nickname:
+        example: ffh255
+        type: string
+    type: object
+  AuthUsernameAvailabilityGetHandler.ResponseBody:
+    properties:
+      available:
+        type: boolean
+    type: object
+  ResponseError:
+    properties:
+      error:
+        example: something went wrong
+        type: string
+    type: object
+  UserUsernamePatchHandler.RequestBody:
+    properties:
+      username:
+        type: string
+    type: object
+  UsersMeGetHandler.ResponseBody:
+    properties:
+      user:
+        $ref: '#/definitions/UsersMeGetHandler.User'
+    type: object
+  UsersMeGetHandler.User:
+    properties:
+      email:
+        type: string
+      joinedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  UsersMeStatisticsGetHandler.ResponseBody:
+    properties:
+      statistics:
+        items:
+          $ref: '#/definitions/UsersMeStatisticsGetHandler.Stats'
+        type: array
+    type: object
+  UsersMeStatisticsGetHandler.Stats:
+    properties:
+      accuracy:
+        example: 98.7
+        format: float64
+        type: number
+      cpm:
+        example: 210.3
+        format: float64
+        type: number
+      duration:
+        example: 120000
+        format: int64
+        type: integer
+      id:
+        example: 1
+        format: uint
+        type: integer
+      isPunctuation:
+        example: true
+        type: boolean
+      language:
+        example: english
+        type: string
+      mode:
+        example: time
+        type: string
+      playedAt:
+        example: "2023-12-25T15:04:05Z"
+        format: date-time
+        type: string
+      submode:
+        example: 30s
+        type: string
+      uncompletedTestsCount:
+        example: 0
+        type: integer
+      uncompletedTestsTotalDuration:
+        example: 0
+        type: integer
+      wpm:
+        example: 42.5
+        format: float64
+        type: number
+    type: object
+  UsersMeStatisticsPostHandler.RequestBody:
+    properties:
+      accuracy:
+        example: 98.7
+        type: number
+      cpm:
+        example: 210.3
+        type: number
+      createdAt:
+        example: "2025-10-19T19:02:29+03:00"
+        type: string
+      durationMs:
+        example: 60000
+        type: integer
+      finishedAt:
+        example: "2025-10-19T19:02:29+03:00"
+        type: string
+      isPunctuation:
+        example: true
+        type: boolean
+      language:
+        example: english
+        type: string
+      mode:
+        example: time
+        type: string
+      sign:
+        example: "12345"
+        type: string
+      startedAt:
+        example: "2025-10-19T19:02:29+03:00"
+        type: string
+      submode:
+        example: 1m
+        type: string
+      uid:
+        example: "0"
+        type: string
+      uncompletedTestsCount:
+        example: 0
+        type: integer
+      uncompletedTestsDurationMs:
+        example: 0
+        type: integer
+      wpm:
+        example: 42.5
+        type: number
+    type: object
+  UsersMyStatisticsPostHandler.ResponseBody:
+    properties:
+      isPersonalBest:
+        type: boolean
+      wpmShift:
+        type: number
+    type: object
+  UsersUsernameProfileGetHandler.LanguageStats:
+    properties:
+      language:
+        example: english
+        type: string
+      testsCompleted:
+        example: 1
+        type: integer
+      testsStarted:
+        example: 1
+        type: integer
+      timePlayed:
+        example: 1000
+        type: integer
+    type: object
+  UsersUsernameProfileGetHandler.PersonalBest:
+    properties:
+      accuracy:
+        example: 300
+        type: number
+      language:
+        example: english
+        type: string
+      mode:
+        example: words
+        type: string
+      played_at:
+        example: "2020-09-09T10:10:10Z"
+        type: string
+      submode:
+        example: "25"
+        type: string
+      wpm:
+        example: 100
+        type: number
+    type: object
+  UsersUsernameProfileGetHandler.Profile:
+    properties:
+      completedTests:
+        example: 1
+        type: integer
+      joinedAt:
+        example: "2020-01-01T00:00:00Z"
+        type: string
+      languageStats:
+        items:
+          $ref: '#/definitions/UsersUsernameProfileGetHandler.LanguageStats'
+        type: array
+      personalBests:
+        items:
+          $ref: '#/definitions/UsersUsernameProfileGetHandler.PersonalBest'
+        type: array
+      startedTests:
+        example: 1
+        type: integer
+      timePlayed:
+        example: 1000
+        type: integer
+      username:
+        example: ffh
+        type: string
+    type: object
+  UsersUsernameProfileGetHandler.ResponseBody:
+    properties:
+      profile:
+        $ref: '#/definitions/UsersUsernameProfileGetHandler.Profile'
+    type: object
+info:
+  contact: {}
+  title: Blindtyping
+  version: "0.1"
+paths:
+  /antifroad/key:
+    get:
+      consumes:
+      - application/json
+      description: Получить актуальный антофрод-ключ. Ручка используется только внутри
+        контура blindtyping.
+      parameters:
+      - description: Пароль для авторизации в модуле антифрода
+        example: "12345"
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Антифрод-ключ
+          schema:
+            $ref: '#/definitions/AntifroadKeyGetHandler.ResponseBody'
+        "400":
+          description: Отсутствуем пароль
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "401":
+          description: Неправильный пароль
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "404":
+          description: Ключ не найден (вообще такого быть не должно)
+          schema:
+            $ref: '#/definitions/ResponseError'
+      summary: Получить актуальный антофрод-ключ
+      tags:
+      - Antifroad
+  /antifroad/rotate-keys:
+    post:
+      consumes:
+      - application/json
+      description: Ротировать ключи. Ручка используется только внутри контура blindtyping.
+      parameters:
+      - description: Пароль для авторизации в модуле антифрода
+        example: "12345"
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Отсутствуем пароль
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "401":
+          description: Неправильный пароль
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/ResponseError'
+      summary: Ротировать ключи (служебная ручка)
+      tags:
+      - Antifroad
+  /auth/{provider}:
+    get:
+      consumes:
+      - application/json
+      description: Initiates the OAuth authentication process by redirecting the user
+        to the provider's login page.
+      parameters:
+      - description: OAuth provider name
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User already authenticated
+        "400":
+          description: Missing provider or invalid input
+          schema:
+            $ref: '#/definitions/ResponseError'
+      summary: OAuth Login Redirect
+      tags:
+      - Auth
+  /auth/{provider}/callback:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Обрабатывает callback-запрос от OAuth провайдера. Завершает процесс аутентификации и выполняет перенаправление на соответствующий фронтенд URL в зависимости от результата.
+
+        **Сценарии перенаправления:**
+        - Успешная аутентификация существующего пользователя → `logged_in_url`
+        - Первая аутентификация нового пользователя → `registration_url`
+        - Ошибка аутентификации → `error_redirection_url?status=STATUS`
+
+        **Коды ошибок:**
+        - `1` - Email уже занят другие аккаунтом
+
+        **Особенности:**
+        - Устанавливает authentication cookies при успешной аутентификации или registration_token при необходимости регистрации
+        - Всегда возвращает HTTP 308 (Permanent Redirect)
+        - Параметр `status` передается только в случае ошибки
+      parameters:
+      - description: Название OAuth провайдера (google или github)
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "308":
+          description: Перенаправление на фронтенд
+      summary: OAuth Callback Handler
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Delete session (refresh token), add access token to block list
+        for some time and delete tokens from cookies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "404":
+          description: User session not found
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Server side error
+          schema:
+            $ref: '#/definitions/ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Logout
+      tags:
+      - Auth
+  /auth/ping:
+    get:
+      consumes:
+      - application/json
+      description: Check if user logged in
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Pong
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Ping
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Rotates access and refresh tokens
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "404":
+          description: User session not found
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Something went wrong server side
+          schema:
+            $ref: '#/definitions/ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Refresh
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Finalize user registration by submitting a nickname and a registration
+        token (via cookie).
+      parameters:
+      - description: User nickname
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/AuthRegisterPostHandler.RequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Access and refresh tokens are set as cookies
+        "400":
+          description: Invalid input or missing registration token
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "409":
+          description: User already exists
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Internal server error during registration
+          schema:
+            $ref: '#/definitions/ResponseError'
+      summary: Register user
+      tags:
+      - Auth
+  /auth/username-availability:
+    get:
+      consumes:
+      - application/json
+      description: 'Если username свободен и соответствует требованиям, то в теле
+        ответа будет available: true, иначе available: false. В cookie должен быть
+        живой токен регистрации (registration_token), иначе 401'
+      parameters:
+      - description: Username, который нужно проверить на доступность
+        example: ffh
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AuthUsernameAvailabilityGetHandler.ResponseBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "401":
+          description: Токен регистрации (registration_token) отсутствует или истек
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ResponseError'
+      summary: Преверяет username на доступность для регистрации
+      tags:
+      - Auth
+  /users/{username}/profile:
+    get:
+      consumes:
+      - application/json
+      description: Gets profile of any user by username
+      parameters:
+      - description: Username of user for profile fetching
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User's profile
+          schema:
+            $ref: '#/definitions/UsersUsernameProfileGetHandler.ResponseBody'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ResponseError'
+      summary: Gets user's profile
+      tags:
+      - Profile
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Получить информацию о текущем пользователе при помощи ID вшитого
+        в access token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UsersMeGetHandler.ResponseBody'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "404":
+          description: Пользователь с таким ID не найден
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Непредвиденная ошибка сервера
+          schema:
+            $ref: '#/definitions/ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Получить информацию о текущем пользователе
+      tags:
+      - Users
+  /users/me/statistics:
+    delete:
+      consumes:
+      - application/json
+      description: Делает soft delete для всей статистики пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статистика пользователя удалена
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Внутренняя ошибка сервера (смотреть логи)
+          schema:
+            $ref: '#/definitions/ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Отчистить всю статистику пользователя
+      tags:
+      - User Statistics
+    get:
+      consumes:
+      - application/json
+      description: Отдает статистику текущего пользователя
+      parameters:
+      - description: Дата начала периода выборки в RFC3339
+        example: "2015-09-15T14:00:12-00:00"
+        in: query
+        name: dateFrom
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статистика пользователя
+          schema:
+            $ref: '#/definitions/UsersMeStatisticsGetHandler.ResponseBody'
+        "400":
+          description: Неправильно сформирован запрос
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "401":
+          description: Пользователь не авторизован в системе
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "404":
+          description: Пользователь не найден
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Серверная ошибка
+          schema:
+            $ref: '#/definitions/ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Получить статистику текущего пользователя
+      tags:
+      - User Statistics
+    post:
+      consumes:
+      - application/json
+      description: Creates a new statistics record for the authenticated user
+      parameters:
+      - description: Statistics data to save
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/UsersMeStatisticsPostHandler.RequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Statistics successfully created
+          schema:
+            $ref: '#/definitions/UsersMyStatisticsPostHandler.ResponseBody'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Save typing statistics
+      tags:
+      - User Statistics
+  /users/me/username:
+    patch:
+      consumes:
+      - application/json
+      description: Изменить имя пользователя, но не чаще чем 1 раз в 15 дней
+      parameters:
+      - description: Содержит новое имя пользователя
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/UserUsernamePatchHandler.RequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Имя пользователя обновлено
+        "400":
+          description: Имя пользователя отсутствует или не подходит под условия
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "409":
+          description: Имя пользователя занято
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "429":
+          description: Нельзя так часто изменять имя пользователя
+          schema:
+            $ref: '#/definitions/ResponseError'
+        "500":
+          description: Внутренняя ошибка сервера (смотреть логи)
+          schema:
+            $ref: '#/definitions/ResponseError'
+      summary: Изменить имя пользователя
+      tags:
+      - Users
+swagger: "2.0"

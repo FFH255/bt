@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_statistics_user_id ON statistics USING btree (user_id);
